@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from gooey import Gooey, GooeyParser
-import pandas
 import os
-import subprocess
+from subprocess import Popen, PIPE
+import sys
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+PYTHON_PATH = sys.executable
+CONVERTER_PATH = os.path.join(SCRIPT_PATH, "xlsx2csv.py")
 
 
 class Wrapper:
@@ -24,23 +26,29 @@ class Wrapper:
         files_str = " ".join(self.csv_files)
         cmd = " ".join([processor_path, criteria_str, files_str])
         print u'Processing files...'
-        print cmd
-
+        self.open_subprocess(cmd)
 
     def prepare_data(self, files):
         # converting xlsx files to csv
         file_index = 1
         for filename in files:
-            print u'Converting "%s" to csv...' % os.path.basename(filename)
-            xlsx_file = pandas.ExcelFile(filename)
-            for sheet in xlsx_file.sheet_names:
-                csv_file = xlsx_file.parse(sheet, index_col=None)
-                csv_filename = 'temp_%02d.csv' % file_index
-                print u'Converting sheet "%s" to "%s"' % (sheet, csv_filename)
-                csv_file.to_csv(csv_filename)
-                # keeping a list of absolute csv file paths
-                self.csv_files.append(os.path.join(SCRIPT_PATH, csv_filename))
-                file_index += 1
+            csv_filename = 'temp_%02d.csv' % file_index
+            cmd = " ".join([PYTHON_PATH, CONVERTER_PATH, filename, csv_filename])
+            print u'Converting "%s" to "%s"...' % (os.path.basename(filename), csv_filename)
+            self.open_subprocess(cmd)
+            self.csv_files.append(os.path.join(SCRIPT_PATH, csv_filename))
+            file_index += 1
+
+    @staticmethod
+    def open_subprocess(cmd):
+        subprocess = Popen(cmd, stdout=PIPE, shell=True)
+        stdout, stderr = subprocess.communicate()
+        result = stdout.split('\n')
+        for line in result:
+            print line
+        if stderr:
+            print stderr
+            sys.exit(1)
 
 
 @Gooey(program_name="XLSX Processing", optional_cols=2)
