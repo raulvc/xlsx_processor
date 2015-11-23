@@ -7,7 +7,7 @@ Table of Contents
 
 - [Introduction](#introduction)
 - [Dependencies](#dependencies)
-- [Acknowledgment](#Acknowledgment)
+- [Acknowledgments](#Acknowledgments)
 
 ##Introduction
 
@@ -26,9 +26,10 @@ A Python script is used for handling user input trough a (gooey) gui, converting
 recommended way of installing deps is by using [pip](https://pypi.python.org/pypi/pip)
 - [Gooey](https://github.com/chriskiehl/Gooey)
 - [wxPython](http://www.wxpython.org/download.php)
-- [xlsx2csv](https://github.com/dilshod/xlsx2csv) (included in wrapper)
+- [xlsx2csv](https://github.com/dilshod/xlsx2csv) (included)
+- [fast-cpp-csv-parser](https://github.com/ben-strasser/fast-cpp-csv-parser) (included)
 
-##Acknowledgment
+##Acknowledgments
 Performance is all thanks to the awesome work of
 -  Ben Strasser at [fast-cpp-csv-parser](https://github.com/ben-strasser/fast-cpp-csv-parser)
 -  Dilshod Temirkhodjaev at [xlsx2csv] (https://github.com/dilshod/xlsx2csv)

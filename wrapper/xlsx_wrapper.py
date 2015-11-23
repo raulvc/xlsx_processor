@@ -16,15 +16,17 @@ class Wrapper:
 
     def start(self, params):
         self.prepare_data(params.files)
-        criteria = [params.line_criteria, params.fvalley_criteria, params.fpeak_criteria, params.defvalley_criteria,
+        start_dir = 1 if params.start_dir == 'Peak' else 0
+        criteria = [start_dir, params.line_criteria, params.fvalley_criteria, params.fpeak_criteria,
+                    params.defvalley_criteria,
                     params.defpeak_criteria]
-        self.process(params.processor, criteria)
+        self.process(params.processor, criteria, params.output)
 
-    def process(self, processor_path, criteria):
+    def process(self, processor_path, criteria, output):
         # building command string
         criteria_str = " ".join(str(cr) for cr in criteria)
         files_str = " ".join(self.csv_files)
-        cmd = " ".join([processor_path, criteria_str, files_str])
+        cmd = " ".join([processor_path, criteria_str, output, files_str])
         print u'Processing files...'
         self.open_subprocess(cmd)
 
@@ -58,18 +60,20 @@ def parse_args():
                         help=u'xlsx files to be processed')
     parser.add_argument('output', type=unicode, widget='FileSaver',
                         help=u'csv file to be saved', default=os.path.join(SCRIPT_PATH, 'results.csv'))
+    parser.add_argument('--start_dir', type=str, dest='start_dir', choices=['Peak', 'Valley'],
+                        help=u'set this to "Peak" if input starts with low-to high values', default='Valley')
     parser.add_argument('processor', type=unicode, widget='FileChooser',
                         help=u'processor executable', default=os.path.join(SCRIPT_PATH, "processor"))
     parser.add_argument('-t', '--tolerance', type=int, dest='line_criteria',
                         help=u'min lines criteria until next peak/valley', default=5)
     parser.add_argument('--fvalley', type=float, dest='fvalley_criteria',
-                        help=u'[force] min value criteria until next valley', default=5000)
+                        help=u'[force] min value criteria until next valley', default=18000)
     parser.add_argument('--fpeak', type=float, dest='fpeak_criteria',
-                        help=u'[force] min value criteria until next peak', default=16000)
+                        help=u'[force] min value criteria until next peak', default=25000)
     parser.add_argument('--defvalley', type=float, dest='defvalley_criteria',
                         help=u'[deformation] min value criteria until next valley', default=400)
     parser.add_argument('--defpeak', type=float, dest='defpeak_criteria',
-                        help=u'[deformation] min value criteria until next peak', default=1200)
+                        help=u'[deformation] min value criteria until next peak', default=500)    
     return parser.parse_args()
 
 
